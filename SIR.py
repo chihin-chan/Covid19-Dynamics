@@ -16,8 +16,8 @@ from scipy.integrate import solve_ivp
 # ODE Function
 def sir(t,y):
     
-    gamma = 0.08023309
-    beta =  0.00003974
+    gamma = 0.013309
+    beta =  0.00001774
     
     S = y[0]
     I = y[1]
@@ -42,7 +42,7 @@ recovered = recovered.values
 infect = confirmed - recovered
 
 # Suceptable = Total Population
-N = 15000
+N = 20000
 
 # Number of infected at t0
 I0 = 2
@@ -53,13 +53,16 @@ R0 = 0
 S = N - confirmed
 
 # Parameters to optimise
-size = 100 # No. of days
+size = 200 # No. of days
 t_eval = np.arange(0,size,1)
-res = solve_ivp(sir, [0, 100], [S0,I0,R0], t_eval=np.arange(0,size,1))
+res = solve_ivp(sir, [0, size], [S0,I0,R0], t_eval=np.arange(0,size,1))
 
 plt.plot(res.y[0])
 plt.plot(res.y[1])
 plt.plot(res.y[2])
-plt.legend(('S', 'I', 'R'))
+plt.plot(infect)
+plt.plot(recovered)
+plt.legend(('S', 'I', 'R', 'Actual Infected', 'Actual Recovered'))
+plt.grid()
 plt.show()
 
