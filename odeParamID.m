@@ -1,4 +1,4 @@
-function bestc = odeParamID()
+
 %% Create some "experimental data"
 expTime = 0:0.01:10;
 expY = exp(-expTime) + 0.02*randn(size(expTime));
@@ -18,6 +18,7 @@ plot(expTime, simY, '-r')
 
 %% Set up optimization
 myObjective = @(x) objFcn(x, expTime, expY,tSpan,z0);
+
 lb = 0;
 ub = 5;
 
@@ -32,12 +33,19 @@ legend('Exp Data','Initial Param','Best Param');
 
 function f = updateStates(t, z, c)
 
-f = -c*z;
+    f = -c*z;
+
+end
 
 function cost = objFcn(x,expTime,expY,tSpan,z0)
+    
+    % Solving ODE problem
+    ODE_Sol = ode45(@(t,z)updateStates(t,z,x), tSpan, z0);
+    
+    % Interpolate
+    simY = deval(ODE_Sol, expTime);
 
-ODE_Sol = ode45(@(t,z)updateStates(t,z,x), tSpan, z0);
-simY = deval(ODE_Sol, expTime);
-
-cost = simY-expY;
+    % Cost = error
+    cost = simY-expY;
+end
 

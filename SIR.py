@@ -12,6 +12,7 @@ import scipy as sp
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
+from scipy.optimize import least_squares
 
 # ODE Function
 def sir(t,y):
@@ -24,6 +25,21 @@ def sir(t,y):
     R = y[2]
     return [-beta*I*S, beta*I*S - gamma*I, gamma*I]
 
+# Cost function
+def cost(x, t, init):
+    t_eval = np.arange(0,t,1)
+    res = solve_ivp(sir, [0, t], [init[0], init[1], init[2]], t_eval=np.arange(0,t,1))
+    
+    # Costs/errors
+    infect_error = np.zeros(len(x))
+    for i in range(0,len(x)):
+        infect_error[i] = res.y[1][i] - x[i]
+
+
+    return infect_error
+
+    
+
 
 c_df = pd.read_csv('time_series_covid19_confirmed_global.csv')
 r_df = pd.read_csv('time_series_covid19_recovered_global.csv')
@@ -32,11 +48,12 @@ country = "Switzerland"
 start_date = "2/26/20"
 start_date_2 = "2/26/2020"
 
+# Parsing confirmed/recovered cases from csv
 confirmed = c_df[c_df['Country/Region'] == country].iloc[0].loc[start_date:]
 recovered = r_df[r_df['Country/Region'] == country].iloc[0].loc[start_date_2:]
-confirmed = confirmed.values[0:-1]
+# Truncate last element to fit recovered data
+confirmed = confirmed.values[0:-1]  
 recovered = recovered.values
-
 
 # I(t)
 infect = confirmed - recovered
@@ -53,9 +70,8 @@ R0 = 0
 S = N - confirmed
 
 # Parameters to optimise
-size = 200 # No. of days
-t_eval = np.arange(0,size,1)
-res = solve_ivp(sir, [0, size], [S0,I0,R0], t_eval=np.arange(0,size,1))
+res_lsq = least_squares(cost(infect, len(infect), [S0, I0, R0]), 
+
 
 plt.plot(res.y[0])
 plt.plot(res.y[1])
