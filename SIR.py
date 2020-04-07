@@ -34,12 +34,20 @@ def predict(x, infect_data, recovered_data, init, beta, gamma):
                     [init[0], init[1], init[2]],
                     t_eval=np.arange(0,t_extend,1))
     
-    plt.plot(t, res.y[0])
-    plt.plot(t, res.y[1])
-    plt.plot(t, res.y[2])
-    plt.plot(x, infect_data)
-    plt.plot(x, recovered_data)
-    plt.legend(("S","I","R", "I_exact", "R_exact"))
+    plt.plot(t, res.y[0],"--", linewidth=2)
+    plt.plot(t, res.y[1],"--", linewidth=2)
+    plt.plot(t, res.y[2],"--", linewidth=2)
+    plt.plot(x, infect_data, linewidth=4)
+    plt.plot(x, recovered_data, linewidth=4)
+    plt.legend(("Susceptibles prediction",
+                "Infected prediction",
+                "Recovered prediciton", 
+                "Infected data", 
+                "Recoverd data"))
+    
+    plt.xlabel("Time since the 1st feb", fontsize=18)
+    plt.ylabel("Number of people", fontsize=18)
+    plt.title("Predicitons for Switzerland", fontsize=22)
     plt.grid()
     plt.show()
     
@@ -74,8 +82,8 @@ def cost(point, infect_data, recovered_data, init):
 c_df = pd.read_csv('time_series_covid19_confirmed_global.csv')
 r_df = pd.read_csv('time_series_covid19_recovered_global.csv')
 
-country = "Ireland"
-start_date = "1/23/20"
+country = "Switzerland"
+start_date = "2/10/20"
 
 # Parsing confirmed/recovered cases from csv
 confirmed = c_df[c_df['Country/Region'] == country].iloc[0].loc[start_date:]
@@ -88,7 +96,7 @@ recovered = recovered.values
 infect = confirmed - recovered
 
 # Suceptable
-N = 10000
+N = 22500
 
 # Number of infected at t0
 I0 = 2
