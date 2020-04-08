@@ -10,12 +10,14 @@
 import numpy as np
 import scipy as sp
 import pandas as pd
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
 
 # Predict function
-def predict(x, infect_data, recovered_data, init, beta, gamma):
+def predict(x, infect_data, recovered_data, init, beta, gamma, start, country):
     
     # ODE Function
     def sir(t, y):
@@ -27,29 +29,39 @@ def predict(x, infect_data, recovered_data, init, beta, gamma):
         
         return [-beta*I*S, beta*I*S - gamma*I, gamma*I]
     
-    t_extend = len(x) + 100
-    t = np.linspace(0,t_extend, t_extend)
+    # Computing ODE to +100 days
+    t_extend = len(x) + 365
+    t = np.linspace(0, t_extend, t_extend)
+    
+    # Solving SIR
     res = solve_ivp(sir, 
                     [0, t_extend], 
                     [init[0], init[1], init[2]],
                     t_eval=np.arange(0,t_extend,1))
     
-    plt.plot(t, res.y[0],"--", linewidth=2)
-    plt.plot(t, res.y[1],"--", linewidth=2)
-    plt.plot(t, res.y[2],"--", linewidth=2)
-    plt.plot(x, infect_data, linewidth=4)
-    plt.plot(x, recovered_data, linewidth=4)
-    plt.legend(("Susceptibles prediction",
-                "Infected prediction",
-                "Recovered prediciton", 
-                "Infected data", 
-                "Recoverd data"))
+    # Preparing date axis
+    date_format = '%m/%d/%y'
+    time = start
+    for i in range(t_extend-1):
+        time_add = datetime.strptime(start, date_format) + timedelta(days=i+1)
+        time = np.append(time, time_add.strftime(date_format))
     
-    plt.xlabel("Time since the 1st feb", fontsize=18)
+    # Adding values of recovered and infect
+    infect_data = np.concatenate((infect_data, [None] * (t_extend-len(infect_data))))
+    recovered_data = np.concatenate((recovered_data, [None] * (t_extend-len(recovered_data))))
+    # Plotting routines
+    df = pd.DataFrame({'Susceptible': res.y[0], 'Infected': res.y[1], 'Recovered': res.y[2], "Infected (Data)": infect_data, "Recovered (Data)": recovered_data}, index=time)
+    fig, ax = plt.subplots(figsize = (12,12))
+    df['Susceptible'].plot(linestyle = '--', linewidth = 2)
+    df['Infected'].plot(linestyle = '--', linewidth = 2)
+    df['Recovered'].plot(linestyle = '--', linewidth = 2)
+    df['Infected (Data)'].plot(linewidth = 4)
+    df['Recovered (Data)'].plot(linewidth = 4)
     plt.ylabel("Number of people", fontsize=18)
-    plt.title("Predicitons for Switzerland", fontsize=22)
+    plot_title = ('Predictions for ' + country)
+    plt.title(plot_title, fontsize=22)
+    plt.legend()
     plt.grid()
-    plt.show()
     
 
 # Cost function
@@ -79,11 +91,12 @@ def cost(point, infect_data, recovered_data, init):
     print(alpha*rmse_infect + (1-alpha)*rmse_recoverd)
     return alpha*rmse_infect + (1-alpha)*rmse_recoverd
 
+plt.close()
 c_df = pd.read_csv('time_series_covid19_confirmed_global.csv')
 r_df = pd.read_csv('time_series_covid19_recovered_global.csv')
 
-country = "Switzerland"
-start_date = "2/10/20"
+country = "Singapore"
+start_date = "1/25/20"
 
 # Parsing confirmed/recovered cases from csv
 confirmed = c_df[c_df['Country/Region'] == country].iloc[0].loc[start_date:]
@@ -96,7 +109,7 @@ recovered = recovered.values
 infect = confirmed - recovered
 
 # Suceptable
-N = 22500
+N = 5000
 
 # Number of infected at t0
 I0 = 2
@@ -111,11 +124,12 @@ optimal = minimize(cost,
                    [0.00001, 0.00001], 
                    args=(infect, recovered, [S0, I0, R0]),
                    method='L-BFGS-B',
-                   bounds=[(0.00000001, 0.4), (0.00000001, 0.4)])
+                   bounds=[(0.00000001, 0.8), (0.00000001, 0.8)])
 print(optimal.x)
-
+print("Gamma/Beta: " + str(optimal.x[1]/optimal.x[0]))
+print("S0*Beta/Gamma: " + str(S0*optimal.x[0]/optimal.x[1]))
 t = np.linspace(0,len(infect), len(infect))
 
-predict(np.transpose(t), infect, recovered, [S0, I0, R0], optimal.x[0], optimal.x[1])
+predict(np.transpose(t), infect, recovered, [S0, I0, R0], optimal.x[0], optimal.x[1], start_date, country)
 
 
