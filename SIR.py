@@ -46,11 +46,17 @@ def predict(x, infect_data, recovered_data, init, beta, gamma, start, country):
         time_add = datetime.strptime(start, date_format) + timedelta(days=i+1)
         time = np.append(time, time_add.strftime(date_format))
     
-    # Adding values of recovered and infect
+    # Adding NaN values of to official data for plotting
     infect_data = np.concatenate((infect_data, [None] * (t_extend-len(infect_data))))
     recovered_data = np.concatenate((recovered_data, [None] * (t_extend-len(recovered_data))))
+    
     # Plotting routines
-    df = pd.DataFrame({'Susceptible': res.y[0], 'Infected': res.y[1], 'Recovered': res.y[2], "Infected (Data)": infect_data, "Recovered (Data)": recovered_data}, index=time)
+    df = pd.DataFrame({'Susceptible': res.y[0], 
+                        'Infected': res.y[1], 
+                        'Recovered': res.y[2], 
+                        "Infected (Data)": infect_data, 
+                        "Recovered (Data)": recovered_data}, 
+                        index=time)
     fig, ax = plt.subplots(figsize = (12,12))
     df['Susceptible'].plot(linestyle = '--', linewidth = 2)
     df['Infected'].plot(linestyle = '--', linewidth = 2)
@@ -58,10 +64,12 @@ def predict(x, infect_data, recovered_data, init, beta, gamma, start, country):
     df['Infected (Data)'].plot(linewidth = 4)
     df['Recovered (Data)'].plot(linewidth = 4)
     plt.ylabel("Number of people", fontsize=18)
+    plt.xlabel("mm/dd/yy", fontsize=18)
     plot_title = ('Predictions for ' + country)
     plt.title(plot_title, fontsize=22)
     plt.legend()
     plt.grid()
+    plt.show()
     
 
 # Cost function
@@ -78,15 +86,18 @@ def cost(point, infect_data, recovered_data, init):
         R = y[2]
         
         return [-beta*I*S, beta*I*S - gamma*I, gamma*I]
-    
+   
+    # Solving ODE 
     res = solve_ivp(sir, 
                     [0, len(infect_data)], 
                     [init[0], init[1], init[2]],
                     t_eval=np.arange(0,len(infect_data),1))
-    # Costs/errors
+  
     # Returns RMSE
     rmse_infect = np.sqrt(np.mean((res.y[1] - infect_data)**2)) 
     rmse_recoverd = np.sqrt(np.mean((res.y[2] - recovered_data)**2)) 
+    
+    # Defining weights
     alpha = 0.1
     print(alpha*rmse_infect + (1-alpha)*rmse_recoverd)
     return alpha*rmse_infect + (1-alpha)*rmse_recoverd
@@ -125,11 +136,18 @@ optimal = minimize(cost,
                    args=(infect, recovered, [S0, I0, R0]),
                    method='L-BFGS-B',
                    bounds=[(0.00000001, 0.8), (0.00000001, 0.8)])
+# Prints Beta/Gamma
 print(optimal.x)
-print("Gamma/Beta: " + str(optimal.x[1]/optimal.x[0]))
-print("S0*Beta/Gamma: " + str(S0*optimal.x[0]/optimal.x[1]))
-t = np.linspace(0,len(infect), len(infect))
 
+# Prints Gamma/Beta, if S0 > Gamma/Beta -> exponential growth
+print("Gamma/Beta: " + str(optimal.x[1]/optimal.x[0]))
+
+# Prints Repoductive Ratio S0*Beta/Gamma. 
+# Measures number of secondary infection from primary infection, 2->5 based on Tom Rocks Math
+print("S0*Beta/Gamma: " + str(S0*optimal.x[0]/optimal.x[1]))
+
+# Predicting numbers from optimised gamma & beta
+t = np.linspace(0,len(infect), len(infect))
 predict(np.transpose(t), infect, recovered, [S0, I0, R0], optimal.x[0], optimal.x[1], start_date, country)
 
 
