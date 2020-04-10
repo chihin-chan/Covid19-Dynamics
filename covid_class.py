@@ -112,11 +112,11 @@ class Covid:
                             "Recovered (Data)": self.recovered}, 
                             index=time)
         fig, ax = plt.subplots(figsize = (12,12))
-        df['Susceptible'].plot(linestyle = '--', linewidth = 2)
-        df['Infected'].plot(linestyle = '--', linewidth = 2)
-        df['Recovered'].plot(linestyle = '--', linewidth = 2)
-        df['Infected (Data)'].plot(linewidth = 4)
-        df['Recovered (Data)'].plot(linewidth = 4)
+        df['Susceptible'].plot(color='b',linestyle = '--', linewidth = 2)
+        df['Infected'].plot(color='r',linestyle = '--', linewidth = 2)
+        df['Recovered'].plot(color='g',linestyle = '--', linewidth = 2)
+        df['Infected (Data)'].plot(color='r',linewidth = 4)
+        df['Recovered (Data)'].plot(color='g',linewidth = 4)
         plt.ylabel("Number of people", fontsize=18)
         plt.xlabel("mm/dd/yy", fontsize=18)
         info = ( "Data Updated:" + self.end_date + '\n' 
@@ -125,7 +125,7 @@ class Covid:
                 + "S0: " + str(self.S0) + '\n' 
                 + "Reproductive No (S0*B/g): "+ str("{:.3f}".format(self.S0*self.beta/self.gamma)) 
                 )
-        plt.text(0.02, 0.95, info, fontsize = 12, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
+        plt.text(0.02, 0.8, info, fontsize = 10, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
         plot_title = ('Predictions for ' + self.country + " " + self.state + " to " + time[-1])
         plt.title(plot_title, fontsize=22)
         plt.legend()
