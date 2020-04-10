@@ -17,7 +17,7 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
 
 # Predict function
-def predict(x, infect_data, recovered_data, init, beta, gamma, start, country):
+def predict(x, infect_data, recovered_data, init, beta, gamma, start, country, end_date):
     
     # ODE Function
     def sir(t, y):
@@ -65,6 +65,8 @@ def predict(x, infect_data, recovered_data, init, beta, gamma, start, country):
     df['Recovered (Data)'].plot(linewidth = 4)
     plt.ylabel("Number of people", fontsize=18)
     plt.xlabel("mm/dd/yy", fontsize=18)
+    info =  "Data Updated:" + end_date + '\n' + "Beta: " + str("{:.9f}".format(beta)) + '\n' + "Gamma: " + str("{:.5f}".format(gamma)) + '\n' + "Reproductive No (S0*B/g): "+ str("{:.3f}".format(init[0]*beta/gamma))
+    plt.text(0.02, 0.95, info, fontsize = 12, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
     plot_title = ('Predictions for ' + country)
     plt.title(plot_title, fontsize=22)
     plt.legend()
@@ -105,13 +107,15 @@ def cost(point, infect_data, recovered_data, init):
 plt.close()
 c_df = pd.read_csv('time_series_covid19_confirmed_global.csv')
 r_df = pd.read_csv('time_series_covid19_recovered_global.csv')
-
+# Saving end date
+end_date = c_df.columns[-1]
 country = "Singapore"
 start_date = "1/25/20"
 
 # Parsing confirmed/recovered cases from csv
 confirmed = c_df[c_df['Country/Region'] == country].iloc[0].loc[start_date:]
 recovered = r_df[r_df['Country/Region'] == country].iloc[0].loc[start_date:]
+
 # Truncate last element to fit recovered data
 confirmed = confirmed.values 
 recovered = recovered.values
@@ -148,6 +152,6 @@ print("S0*Beta/Gamma: " + str(S0*optimal.x[0]/optimal.x[1]))
 
 # Predicting numbers from optimised gamma & beta
 t = np.linspace(0,len(infect), len(infect))
-predict(np.transpose(t), infect, recovered, [S0, I0, R0], optimal.x[0], optimal.x[1], start_date, country)
+predict(np.transpose(t), infect, recovered, [S0, I0, R0], optimal.x[0], optimal.x[1], start_date, country,end_date)
 
 
