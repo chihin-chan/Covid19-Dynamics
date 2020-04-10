@@ -109,7 +109,8 @@ c_df = pd.read_csv('time_series_covid19_confirmed_global.csv')
 r_df = pd.read_csv('time_series_covid19_recovered_global.csv')
 # Saving end date
 end_date = c_df.columns[-1]
-country = "Singapore"
+country = "United Kingdom"
+state = ""
 start_date = "1/25/20"
 
 # Parsing confirmed/recovered cases from csv
@@ -130,9 +131,6 @@ N = 9000
 I0 = 2
 S0 = N-I0
 R0 = 0
-
-# S(t) = N - I(t) - R(t)
-S = N - confirmed
 
 # Parameters to optimise
 optimal = minimize(cost, 
