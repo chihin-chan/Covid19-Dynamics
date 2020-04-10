@@ -98,7 +98,7 @@ def cost(point, infect_data, recovered_data, init):
     rmse_recoverd = np.sqrt(np.mean((res.y[2] - recovered_data)**2)) 
     
     # Defining weights
-    alpha = 0.1
+    alpha = 0.2
     print(alpha*rmse_infect + (1-alpha)*rmse_recoverd)
     return alpha*rmse_infect + (1-alpha)*rmse_recoverd
 
@@ -120,7 +120,7 @@ recovered = recovered.values
 infect = confirmed - recovered
 
 # Suceptable
-N = 5000
+N = 9000
 
 # Number of infected at t0
 I0 = 2
