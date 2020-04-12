@@ -1,68 +1,47 @@
-Project Title
+# Project Title
 
-One Paragraph of project description goes here
-Getting Started
+Covid19-Dynamics
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-Prerequisites
+## Getting Started
 
-What things you need to install the software and how to install them
+Modeling the dynamics of the COVID19 disease with SIR model using Python
 
-Give examples
+### Prerequisites
 
-Installing
+Tested with Python 3.7.4
 
-A step by step series of examples that tell you how to get a development env running
+## Running
 
-Say what the step will be
+An example for running the case of Singapore is shown in the main.py script
+```
+# Initialise class Covid("Country", "State", "Start Date")
+# If no state leave it is "sg = Covid("China", "Hubei", "1/22/20")
+sg = Covid("Singapore", "", "1/22/20")
 
-Give the example
+# Loads Data from John Hopkins
+sg.load()
 
-And repeat
+# find_beta_gamma(S0, alpha)
+# Input Total Population N s.t S0 = N - 2
+# Alpha = (1-alpha)*rmse_recoverd + alpha*rmse_infect
+sg.find_beta_gamma(8000, 0.1)
 
-until finished
+# predict(days) -> days refers to the limits of ODE solver since start date
+sg.predict(150)
 
-End with an example of getting some data out of the system or using it for a little demo
-Running the tests
+# reduce reproduciton number by 1.5 times with predict2
+sg.predict2(150, 1.5)
+``` 
 
-Explain how to run the automated tests for this system
-Break down into end to end tests
+## Authors
 
-Explain what these tests test and why
+* **Billie Thompson** (https://github.com/CHCFD)
+* **Jean-Phillippe Kuntzer** (https://github.com/jphkun)
 
-Give an example
+## References
+    Tom Rocks Math Youtube Channel (highly recommended)
+    https://www.maa.org/press/periodicals/loci/joma/the-sir-model-for-spread-of-disease-the-differential-equation-model (theory)
+    https://mathworld.wolfram.com/SIRModel.html (theory)
+    https://www.lewuathe.com/covid-19-dynamics-with-sir-model.html (coding techniques)
 
-And coding style tests
 
-Explain what these tests test and why
-
-Give an example
-
-Deployment
-
-Add additional notes about how to deploy this on a live system
-Built With
-
-    Dropwizard - The web framework used
-    Maven - Dependency Management
-    ROME - Used to generate RSS Feeds
-
-Contributing
-
-Please read CONTRIBUTING.md for details on our code of conduct, and the process for submitting pull requests to us.
-Versioning
-
-We use SemVer for versioning. For the versions available, see the tags on this repository.
-Authors
-
-    Billie Thompson - Initial work - PurpleBooth
-
-See also the list of contributors who participated in this project.
-License
-
-This project is licensed under the MIT License - see the LICENSE.md file for details
-Acknowledgments
-
-    Hat tip to anyone whose code was used
-    Inspiration
-    etc
