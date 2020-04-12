@@ -31,13 +31,13 @@ sg.predict2(150, 1.5)
 
 ## Authors
 
-* **Billie Thompson** (https://github.com/CHCFD)
+* **Chan Chi Hin** (https://github.com/CHCFD)
 * **Jean-Phillippe Kuntzer** (https://github.com/jphkun)
 
 ## References
-    Tom Rocks Math Youtube Channel (highly recommended)
-    https://www.maa.org/press/periodicals/loci/joma/the-sir-model-for-spread-of-disease-the-differential-equation-model (theory)
-    https://mathworld.wolfram.com/SIRModel.html (theory)
-    https://www.lewuathe.com/covid-19-dynamics-with-sir-model.html (coding techniques)
+Tom Rocks Math Youtube Channel (highly recommended)
+https://www.maa.org/press/periodicals/loci/joma/the-sir-model-for-spread-of-disease-the-differential-equation-model (theory)
+https://mathworld.wolfram.com/SIRModel.html (theory)
+https://www.lewuathe.com/covid-19-dynamics-with-sir-model.html (coding techniques)
 
 
