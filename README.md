@@ -1,8 +1,4 @@
-# Project Title
-
-Covid19-Dynamics
-
-## Getting Started
+# Covid19-Dynamics
 
 Modeling the dynamics of the COVID19 disease with SIR model using Python
 
