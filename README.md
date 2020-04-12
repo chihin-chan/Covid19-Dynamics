@@ -35,6 +35,6 @@ sg.predict2(150, 1.5)
 * **Jean-Phillippe Kuntzer** (https://github.com/jphkun)
 
 ## References
-https://www.lewuathe.com/covid-19-dynamics-with-sir-model.html
+https://www.lewuathe.com/covid-19-dynamics-with-sir-model.html \
 https://www.youtube.com/watch?v=NKMHhm2Zbkw&t=597s
 
