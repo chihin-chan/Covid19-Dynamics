@@ -36,5 +36,5 @@ sg.predict2(150, 1.5)
 
 ## References
 https://www.lewuathe.com/covid-19-dynamics-with-sir-model.html
-
+https://www.youtube.com/watch?v=NKMHhm2Zbkw&t=597s
 
