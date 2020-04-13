@@ -10,7 +10,8 @@
 from covid_class import Covid
 
 # Initialise class Covid("Country", "State", "Start Date")
-# If no state leave it is "sg = Covid("China", "Hubei", "1/22/20")
+# If no state leave it is "sg = Covid("Singapore", "", "1/22/20")
+# Refer to time_series_data.csv file for format
 sg = Covid("Singapore", "", "1/22/20")
 
 # Loads Data from John Hopkins
